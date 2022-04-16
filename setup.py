@@ -1,5 +1,4 @@
-from ast import keyword
-from setup import setup, find_packages
+from setuptools import setup, find_packages
 
 classiers = [
     'Development Status :: 3 - Alpha',

@@ -1,0 +1,13 @@
+<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/4" Version="4.0" Fecha="2022-04-20T16:46:10" Sello="NotengoSello" FormaPago="01" NoCertificado="00001000000200000192" Certificado="" SubTotal="100" Descuento="1" Moneda="MXN" Total="100" TipoDeComprobante="I" Exportacion="01" MetodoPago="PUE" LugarExpedicion="45079">
+    <cfdi:Emisor Rfc="AAA010101AAA" Nombre="EMPRESA DEMO" RegimenFiscal="601"/>
+    <cfdi:Receptor Rfc="XAXX010101000" Nombre="Publico en General" DomicilioFiscalReceptor="78090" RegimenFiscalReceptor="601" UsoCFDI="G01"/>
+    <cfdi:Conceptos>
+        <cfdi:Concepto ClaveProdServ="10101502" NoIdentificacion="1" Cantidad="1" ClaveUnidad="B17" Unidad="Actividad" Descripcion="Pago" ValorUnitario="100" Importe="100" ObjetoImp="02">
+            <cfdi:Impuestos>
+                <cfdi:Traslados>
+                    <cfdi:Traslado Base="100" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.16" Importe="16"/>
+                </cfdi:Traslados>
+            </cfdi:Impuestos>
+        </cfdi:Concepto>
+    </cfdi:Conceptos>
+</cfdi:Comprobante>

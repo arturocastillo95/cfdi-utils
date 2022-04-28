@@ -1,1 +1,0 @@
-Review the function gds_format_datetime

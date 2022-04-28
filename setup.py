@@ -10,7 +10,7 @@ classiers = [
 
 setup(
     name= "cfdi-utils",
-    version= "0.0.1",
+    version= "0.0.2",
     description= "Utilities to work with CFDI",
     long_description= open('README.txt').read() + '\n\n' + open('CHANGELOG.txt').read(),
     author= "Arturo Castillo",
@@ -20,5 +20,5 @@ setup(
     packages= find_packages(),
     classifiers= classiers,
     keywords= "cfdi",
-    install_requires= [""]
+    install_requires= ['lxml', 'M2Crypto', 'pycryptodomex'],
 )

@@ -1,3 +1,3 @@
 # CFDI UTILS
 
-This is an utility to help you to generate and work with CFDI's.
+Pequeña librería para trabajar con CFDI. Con esta libreria podemos generar el XML de una factura CFDI 4.0 y sellarlo con el sello digital.

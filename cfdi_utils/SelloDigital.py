@@ -1,10 +1,14 @@
 from pathlib import Path
 import ssl
 import base64
-from Cryptodome.PublicKey import RSA as CryptoRSA
-from M2Crypto import RSA, X509
+from M2Crypto import X509
 import hashlib
 import lxml.etree as ET
+
+from Cryptodome.PublicKey import RSA
+from Cryptodome.Hash import SHA256
+from Cryptodome.Signature import PKCS1_v1_5
+
 
 CURRENT_PATH = Path(__file__).parent
 DEFAULT_CADENA_ORIGINAL = CURRENT_PATH / 'xslt/cadenaoriginal_4_0.xslt'
@@ -44,8 +48,8 @@ class SelloDigital():
 
     @property
     def key(self):
-        pem_key = CryptoRSA.import_key(open(str(self.path_key), 'rb').read(), self.password)
-        return pem_key.exportKey()
+        pem_key = RSA.import_key(open(str(self.path_key), 'rb').read(), self.password)
+        return pem_key
 
     @property
     def numero_cer(self):
@@ -62,23 +66,29 @@ class SelloDigital():
     @property
     def cert_base64(self):
         cert = open(self.path_cer, 'rb').read()
-        return base64.b64encode(cert).decode()
+        return base64.b64encode(cert).decode('utf-8')
 
-    def validar_cer_key(self):
-        obj_cer = X509.load_cert_string(self.cert)
-        obj_key = RSA.load_key_string(self.key)
-        return True if obj_key.check_key() > 0 else False
+    # def validar_cer_key(self):
+    #     obj_cer = X509.load_cert_string(self.cert)
+    #     obj_key = RSA.load_key_string(self.key)
+    #     return True if obj_key.check_key() > 0 else False
 
     def sellar_xml(self, xml_str, cadena_original_xslt=DEFAULT_CADENA_ORIGINAL):
         xdoc = ET.fromstring(xml_str)
         transformador = ET.XSLT(ET.parse(str(cadena_original_xslt)))
         cadena_original = transformador(xdoc)
-        key = RSA.load_key_string(self.key)
-        digest = hashlib.new('sha1', str(cadena_original).encode('utf-8')).digest()
-        sello = base64.b64encode(key.sign(digest, 'sha1'))
 
-        xdoc.attrib['Sello'] = sello
-        xdoc.attrib['Certificado']= self.cert_base64
+        digest = SHA256.new()
+        digest.update(str(cadena_original).encode('utf-8'))
+
+        private_key = self.key
+        print(private_key.exportKey())
+        signer = PKCS1_v1_5.new(private_key)
+        sig = signer.sign(digest)
+        signature = base64.b64encode(sig).decode('utf-8')
+
+        xdoc.attrib['Sello'] = signature
+
         return ET.tostring(xdoc, encoding='utf-8', method='xml', pretty_print=True)
 
 def main():

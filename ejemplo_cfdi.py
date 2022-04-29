@@ -1,16 +1,35 @@
 from cfdi_utils import CFDI40
 from cfdi_utils.SelloDigital import SelloDigital
+import zeep
+
 
 from io import StringIO
 from datetime import datetime
 from pathlib import Path
 import lxml.etree as ET
 
-PATH_CER = Path('suppourt-files/FIEL_JES900109Q90_20190614162033/CSD_JES900109Q90_20190617134429/30001000000400002436.cer')
-PATH_KEY = Path('suppourt-files/FIEL_JES900109Q90_20190614162033/CSD_JES900109Q90_20190617134429/CSD_Jimenez_Estrada_Salas_1_JES900109Q90_20190617_134353.key')
+PATH_CER = Path('support-files/CSD_XOJI740919U48_20190528180358/30001000000400002330.cer')
+PATH_KEY = Path('support-files/CSD_XOJI740919U48_20190528180358/CSD_INDRID_XODAR_JIMENEZ_XOJI740919U48_20190528_180344.key')
 CONTRASEÑA = '12345678a'
 
-# Crear un objeto SelloDigital
+
+def timbrar_cfdi(usr, password, cfdi_sellado):
+    """
+    Timbra un CFDI sellado
+    """
+    client = zeep.Client(wsdl='http://dev33.facturacfdi.mx/WSTimbradoCFDIService?wsdl')
+    try:
+        accesos_type = client.get_type('ns1:accesos')
+        accesos = accesos_type(usuario=usr, password=password)
+        cfdi_timbrado = client.service.TimbrarCFDI(accesos=accesos, comprobante=cfdi_sellado.decode('utf-8'))
+        return cfdi_timbrado
+    except zeep.exceptions.Fault as e:
+        print(e)
+        return None
+
+
+
+# Crear un objeto SelloDigital con el certificado y la llave privada
 sello = SelloDigital(PATH_CER, PATH_KEY, CONTRASEÑA)
 comprobante_dict = {}
 
@@ -18,13 +37,13 @@ CFDI_COMPROBANTE = {
     'Version': '4.0',
     'FormaPago': '01',
     'NoCertificado': sello.numero_cer,
-    # 'Certificado': "",
+    'Certificado': sello.cert_base64,
     'SubTotal': 100.00,
     'Total': 100.00,
     'Moneda': 'MXN',
     'TipoDeComprobante': 'I',
     'MetodoPago': 'PUE',
-    'LugarExpedicion': '45079',
+    'LugarExpedicion': '44970',
     # 'Sello': 'faltante',
     'Fecha': datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
     'Exportacion': '01',
@@ -32,9 +51,9 @@ CFDI_COMPROBANTE = {
 }
 
 CFDI_EMISOR = {
-    'Rfc': 'AAA010101AAA',
-    'Nombre': 'EMPRESA DEMO',
-    'RegimenFiscal': '601',
+    'Rfc': 'XOJI740919U48',
+    'Nombre': 'INGRID XODAR JIMENEZ',
+    'RegimenFiscal': '612',
 }
 
 CFDI_RECEPTOR = {
@@ -96,11 +115,14 @@ output = StringIO()
 cfdi_obj.export(output, 0)
 
 #Sellamos el comprobante
-signed_xml = sello.sellar_xml(output.getvalue())
+signed_xml = sello.sellar_xml_2(output.getvalue())
+
+cfdi_timbrado = timbrar_cfdi('pruebasWS', 'pruebasWS', signed_xml)
+print(cfdi_timbrado)
 
 #Exportamos el XML
-with open('cfdi_sellado.xml', 'wb') as f:
-    f.write(signed_xml)
+# with open('cfdi_sellado.xml', 'wb') as f:
+#     f.write(signed_xml)
 
 
 

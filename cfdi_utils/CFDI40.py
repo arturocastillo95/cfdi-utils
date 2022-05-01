@@ -110,11 +110,15 @@ def parsexmlstring_(instring, parser=None, **kwargs):
 try:
     from generatedsnamespaces import GenerateDSNamespaceDefs as GenerateDSNamespaceDefs_
 except ModulenotfoundExp_ :
-    GenerateDSNamespaceDefs_ = {}
+    GenerateDSNamespaceDefs_ = {
+        # 'Comprobante': 'xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd"',
+    }
 try:
     from generatedsnamespaces import GenerateDSNamespaceTypePrefixes as GenerateDSNamespaceTypePrefixes_
 except ModulenotfoundExp_ :
-    GenerateDSNamespaceTypePrefixes_ = {}
+    GenerateDSNamespaceTypePrefixes_ = {
+        # 'Comprobante': 'schemaLocation',
+    }
 
 #
 # You can replace the following class definition by defining an
@@ -6233,12 +6237,14 @@ class ComplementoType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
-    def __init__(self, anytypeobjs_=None, gds_collector_=None, **kwargs_):
+    def __init__(self, anytypeobjs_=None, TimbreFiscalDigital=None ,gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
         self.parent_object_ = kwargs_.get('parent_object_')
         self.ns_prefix_ = None
+        self.TimbreFiscalDigital = TimbreFiscalDigital
+        self.TimbreFiscalDigital_nsprefix_ = 'tfd'
         if anytypeobjs_ is None:
             self.anytypeobjs_ = []
         else:
@@ -6262,8 +6268,13 @@ class ComplementoType(GeneratedsSuper):
     def set_anytypeobjs_(self, anytypeobjs_): self.anytypeobjs_ = anytypeobjs_
     def add_anytypeobjs_(self, value): self.anytypeobjs_.append(value)
     def insert_anytypeobjs_(self, index, value): self._anytypeobjs_[index] = value
+    def get_TimbreFiscalDigital(self, TimbreFiscalDigital):
+        return self.TimbreFiscalDigital
+    def set_TimbreFiscalDigital(self, TimbreFiscalDigital):
+        self.TimbreFiscalDigital = TimbreFiscalDigital
     def _hasContent(self):
         if (
+            self.TimbreFiscalDigital is not None or
             self.anytypeobjs_
         ):
             return True
@@ -6299,6 +6310,9 @@ class ComplementoType(GeneratedsSuper):
             eol_ = '\n'
         else:
             eol_ = ''
+        if self.TimbreFiscalDigital is not None:
+            namespaceprefix_ = self.TimbreFiscalDigital_nsprefix_ + ':' if (UseCapturedNS_ and self.TimbreFiscalDigital_nsprefix_) else ''
+            self.TimbreFiscalDigital.export(outfile, level, namespaceprefix_, namespacedef_='', name_='TimbreFiscalDigital', pretty_print=pretty_print)
         if not fromsubclass_:
             for obj_ in self.anytypeobjs_:
                 showIndent(outfile, level, pretty_print)
@@ -6318,8 +6332,13 @@ class ComplementoType(GeneratedsSuper):
     def _buildAttributes(self, node, attrs, already_processed):
         pass
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
-        content_ = self.gds_build_any(child_, 'ComplementoType')
-        self.anytypeobjs_.append(content_)
+        if nodeName_ == 'TimbreFiscalDigital':
+            obj_ = TimbreFiscalDigital.factory()
+            obj_.build(child_, gds_collector_=gds_collector_)
+            self.TimbreFiscalDigital = obj_
+            obj_.original_tagname_ = 'TimbreFiscalDigital'
+        # content_ = self.gds_build_any(child_, 'ComplementoType')
+        # self.anytypeobjs_.append(content_)
 # end class ComplementoType
 
 class AddendaType(GeneratedsSuper):
@@ -6418,6 +6437,321 @@ class AddendaType(GeneratedsSuper):
         self.anytypeobjs_.append(content_)
 # end class AddendaType
 
+class TimbreFiscalDigital(GeneratedsSuper):
+    """TimbreFiscalDigital -- Complemento requerido para el Timbrado Fiscal Digital que da validez al Comprobante fiscal digital por Internet.
+    Version -- Atributo requerido para la expresi
+    ó
+    n de la versi
+    ó
+    n del est
+    á
+    ndar del Timbre Fiscal Digital
+    UUID -- Atributo requerido para expresar los 36 caracteres del folio fiscal (UUID) de la transacci
+    ó
+    n de timbrado conforme al est
+    á
+    ndar RFC 4122
+    FechaTimbrado -- Atributo requerido para expresar la fecha y hora, de la generaci
+    ó
+    n del timbre por la certificaci
+    ó
+    n digital del SAT. Se expresa en la forma AAAA-MM-DDThh:mm:ss y debe corresponder con la hora de la Zona Centro del Sistema de Horario en M
+    é
+    xico.
+    RfcProvCertif -- Atributo requerido para expresar el RFC del proveedor de certificaci
+    ó
+    n de comprobantes fiscales digitales que genera el timbre fiscal digital.
+    Leyenda -- Atributo opcional para registrar informaci
+    ó
+    n que el SAT comunique a los usuarios del CFDI.
+    SelloCFD -- Atributo requerido para contener el sello digital del comprobante fiscal o del comprobante de retenciones, que se ha timbrado. El sello debe ser expresado como una cadena de texto en formato Base 64.
+    NoCertificadoSAT -- Atributo requerido para expresar el n
+    ú
+    mero de serie del certificado del SAT usado para generar el sello digital del Timbre Fiscal Digital.
+    SelloSAT -- Atributo requerido para contener el sello digital del Timbre Fiscal Digital, al que hacen referencia las reglas de la Resoluci
+    ó
+    n Miscel
+    á
+    nea vigente. El sello debe ser expresado como una cadena de texto en formato Base 64.
+    
+    """
+    __hash__ = GeneratedsSuper.__hash__
+    subclass = None
+    superclass = None
+    def __init__(self, Version='1.1', UUID=None, FechaTimbrado=None, RfcProvCertif=None, Leyenda=None, SelloCFD=None, NoCertificadoSAT=None, SelloSAT=None, gds_collector_=None, **kwargs_):
+        self.gds_collector_ = gds_collector_
+        self.gds_elementtree_node_ = None
+        self.original_tagname_ = None
+        self.parent_object_ = kwargs_.get('parent_object_')
+        self.ns_prefix_ = "tfd"
+        self.Version = _cast(None, Version)
+        self.Version_nsprefix_ = None
+        self.UUID = _cast(None, UUID)
+        self.UUID_nsprefix_ = None
+        self.FechaTimbrado = _cast(None, FechaTimbrado)
+        self.FechaTimbrado_nsprefix_ = None
+        self.RfcProvCertif = _cast(None, RfcProvCertif)
+        self.RfcProvCertif_nsprefix_ = None
+        self.Leyenda = _cast(None, Leyenda)
+        self.Leyenda_nsprefix_ = None
+        self.SelloCFD = _cast(None, SelloCFD)
+        self.SelloCFD_nsprefix_ = None
+        self.NoCertificadoSAT = _cast(None, NoCertificadoSAT)
+        self.NoCertificadoSAT_nsprefix_ = None
+        self.SelloSAT = _cast(None, SelloSAT)
+        self.SelloSAT_nsprefix_ = None
+    def factory(*args_, **kwargs_):
+        if CurrentSubclassModule_ is not None:
+            subclass = getSubclassFromModule_(
+                CurrentSubclassModule_, TimbreFiscalDigital)
+            if subclass is not None:
+                return subclass(*args_, **kwargs_)
+        if TimbreFiscalDigital.subclass:
+            return TimbreFiscalDigital.subclass(*args_, **kwargs_)
+        else:
+            return TimbreFiscalDigital(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_ns_prefix_(self):
+        return self.ns_prefix_
+    def set_ns_prefix_(self, ns_prefix):
+        self.ns_prefix_ = ns_prefix
+    def get_Version(self):
+        return self.Version
+    def set_Version(self, Version):
+        self.Version = Version
+    def get_UUID(self):
+        return self.UUID
+    def set_UUID(self, UUID):
+        self.UUID = UUID
+    def get_FechaTimbrado(self):
+        return self.FechaTimbrado
+    def set_FechaTimbrado(self, FechaTimbrado):
+        self.FechaTimbrado = FechaTimbrado
+    def get_RfcProvCertif(self):
+        return self.RfcProvCertif
+    def set_RfcProvCertif(self, RfcProvCertif):
+        self.RfcProvCertif = RfcProvCertif
+    def get_Leyenda(self):
+        return self.Leyenda
+    def set_Leyenda(self, Leyenda):
+        self.Leyenda = Leyenda
+    def get_SelloCFD(self):
+        return self.SelloCFD
+    def set_SelloCFD(self, SelloCFD):
+        self.SelloCFD = SelloCFD
+    def get_NoCertificadoSAT(self):
+        return self.NoCertificadoSAT
+    def set_NoCertificadoSAT(self, NoCertificadoSAT):
+        self.NoCertificadoSAT = NoCertificadoSAT
+    def get_SelloSAT(self):
+        return self.SelloSAT
+    def set_SelloSAT(self, SelloSAT):
+        self.SelloSAT = SelloSAT
+    def validate_UUIDType(self, value):
+        # Validate type UUIDType, a restriction on xs:string.
+        if value is not None and Validate_simpletypes_ and self.gds_collector_ is not None:
+            if not isinstance(value, str):
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s is not of the correct base simple type (str)' % {"value": value, "lineno": lineno, })
+                return False
+            if len(value) != 36:
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s does not match xsd length restriction on UUIDType' % {"value": encode_str_2_3(value), "lineno": lineno} )
+                result = False
+            if not self.gds_validate_simple_patterns(
+                    self.validate_UUIDType_patterns_, value):
+                self.gds_collector_.add_message('Value "%s" does not match xsd pattern restrictions: %s' % (encode_str_2_3(value), self.validate_UUIDType_patterns_, ))
+    validate_UUIDType_patterns_ = [['^([a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12})$']]
+    def validate_t_FechaH(self, value):
+        # Validate type tdCFDI:t_FechaH, a restriction on xs:dateTime.
+        if value is not None and Validate_simpletypes_ and self.gds_collector_ is not None:
+            if not isinstance(value, datetime_.datetime):
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s is not of the correct base simple type (datetime_.datetime)' % {"value": value, "lineno": lineno, })
+                return False
+            value = str(value)
+            if not self.gds_validate_simple_patterns(
+                    self.validate_t_FechaH_patterns_, value):
+                self.gds_collector_.add_message('Value "%s" does not match xsd pattern restrictions: %s' % (encode_str_2_3(value), self.validate_t_FechaH_patterns_, ))
+    validate_t_FechaH_patterns_ = [['^((20[1-9][0-9])-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T(([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]))$']]
+    def validate_t_RFC_PM(self, value):
+        # Validate type tdCFDI:t_RFC_PM, a restriction on xs:string.
+        if value is not None and Validate_simpletypes_ and self.gds_collector_ is not None:
+            if not isinstance(value, str):
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s is not of the correct base simple type (str)' % {"value": value, "lineno": lineno, })
+                return False
+            if len(value) < 12:
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s does not match xsd minLength restriction on t_RFC_PM' % {"value" : encode_str_2_3(value), "lineno": lineno} )
+                result = False
+            if not self.gds_validate_simple_patterns(
+                    self.validate_t_RFC_PM_patterns_, value):
+                self.gds_collector_.add_message('Value "%s" does not match xsd pattern restrictions: %s' % (encode_str_2_3(value), self.validate_t_RFC_PM_patterns_, ))
+    validate_t_RFC_PM_patterns_ = [['^([A-Z&Ñ]{3}[0-9]{2}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])[A-Z0-9]{2}[0-9A])$']]
+    def validate_LeyendaType(self, value):
+        # Validate type LeyendaType, a restriction on xs:string.
+        if value is not None and Validate_simpletypes_ and self.gds_collector_ is not None:
+            if not isinstance(value, str):
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s is not of the correct base simple type (str)' % {"value": value, "lineno": lineno, })
+                return False
+            if len(value) > 150:
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s does not match xsd maxLength restriction on LeyendaType' % {"value" : encode_str_2_3(value), "lineno": lineno} )
+                result = False
+            if len(value) < 12:
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s does not match xsd minLength restriction on LeyendaType' % {"value" : encode_str_2_3(value), "lineno": lineno} )
+                result = False
+            if not self.gds_validate_simple_patterns(
+                    self.validate_LeyendaType_patterns_, value):
+                self.gds_collector_.add_message('Value "%s" does not match xsd pattern restrictions: %s' % (encode_str_2_3(value), self.validate_LeyendaType_patterns_, ))
+    validate_LeyendaType_patterns_ = [['^(([A-Z]|[a-z]|[0-9]| |Ñ|ñ|!|"|%|&|\'|´|-|:|;|>|=|<|@|_|,|\\{|\\}|`|~|á|é|í|ó|ú|Á|É|Í|Ó|Ú|ü|Ü){1,150})$']]
+    def validate_SelloCFDType(self, value):
+        # Validate type SelloCFDType, a restriction on xs:string.
+        if value is not None and Validate_simpletypes_ and self.gds_collector_ is not None:
+            if not isinstance(value, str):
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s is not of the correct base simple type (str)' % {"value": value, "lineno": lineno, })
+                return False
+            pass
+    def validate_NoCertificadoSATType(self, value):
+        # Validate type NoCertificadoSATType, a restriction on xs:string.
+        if value is not None and Validate_simpletypes_ and self.gds_collector_ is not None:
+            if not isinstance(value, str):
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s is not of the correct base simple type (str)' % {"value": value, "lineno": lineno, })
+                return False
+            if len(value) != 20:
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s does not match xsd length restriction on NoCertificadoSATType' % {"value": encode_str_2_3(value), "lineno": lineno} )
+                result = False
+            if not self.gds_validate_simple_patterns(
+                    self.validate_NoCertificadoSATType_patterns_, value):
+                self.gds_collector_.add_message('Value "%s" does not match xsd pattern restrictions: %s' % (encode_str_2_3(value), self.validate_NoCertificadoSATType_patterns_, ))
+    validate_NoCertificadoSATType_patterns_ = [['^([0-9]{20})$']]
+    def validate_SelloSATType(self, value):
+        # Validate type SelloSATType, a restriction on xs:string.
+        if value is not None and Validate_simpletypes_ and self.gds_collector_ is not None:
+            if not isinstance(value, str):
+                lineno = self.gds_get_node_lineno_()
+                self.gds_collector_.add_message('Value "%(value)s"%(lineno)s is not of the correct base simple type (str)' % {"value": value, "lineno": lineno, })
+                return False
+            pass
+    def _hasContent(self):
+        if (
+
+        ):
+            return True
+        else:
+            return False
+    def export(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital"', name_='TimbreFiscalDigital', pretty_print=True):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get('TimbreFiscalDigital')
+        if imported_ns_def_ is not None:
+            namespacedef_ = imported_ns_def_
+        if pretty_print:
+            eol_ = '\n'
+        else:
+            eol_ = ''
+        if self.original_tagname_ is not None and name_ == 'TimbreFiscalDigital':
+            name_ = self.original_tagname_
+        if UseCapturedNS_ and self.ns_prefix_:
+            namespaceprefix_ = self.ns_prefix_ + ':'
+        showIndent(outfile, level, pretty_print)
+        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        already_processed = set()
+        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='TimbreFiscalDigital')
+        if self._hasContent():
+            outfile.write('>%s' % (eol_, ))
+            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='TimbreFiscalDigital', pretty_print=pretty_print)
+            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+        else:
+            outfile.write('/>%s' % (eol_, ))
+    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='TimbreFiscalDigital'):
+        if self.Version is not None and 'Version' not in already_processed:
+            already_processed.add('Version')
+            outfile.write(' Version=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.Version), input_name='Version')), ))
+        if self.UUID is not None and 'UUID' not in already_processed:
+            already_processed.add('UUID')
+            outfile.write(' UUID=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.UUID), input_name='UUID')), ))
+        if self.FechaTimbrado is not None and 'FechaTimbrado' not in already_processed:
+            already_processed.add('FechaTimbrado')
+            outfile.write(' FechaTimbrado="%s"' % self.gds_format_datetime(self.FechaTimbrado, input_name='FechaTimbrado'))
+        if self.RfcProvCertif is not None and 'RfcProvCertif' not in already_processed:
+            already_processed.add('RfcProvCertif')
+            outfile.write(' RfcProvCertif=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.RfcProvCertif), input_name='RfcProvCertif')), ))
+        if self.Leyenda is not None and 'Leyenda' not in already_processed:
+            already_processed.add('Leyenda')
+            outfile.write(' Leyenda=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.Leyenda), input_name='Leyenda')), ))
+        if self.SelloCFD is not None and 'SelloCFD' not in already_processed:
+            already_processed.add('SelloCFD')
+            outfile.write(' SelloCFD=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.SelloCFD), input_name='SelloCFD')), ))
+        if self.NoCertificadoSAT is not None and 'NoCertificadoSAT' not in already_processed:
+            already_processed.add('NoCertificadoSAT')
+            outfile.write(' NoCertificadoSAT=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.NoCertificadoSAT), input_name='NoCertificadoSAT')), ))
+        if self.SelloSAT is not None and 'SelloSAT' not in already_processed:
+            already_processed.add('SelloSAT')
+            outfile.write(' SelloSAT=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.SelloSAT), input_name='SelloSAT')), ))
+    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital"', name_='TimbreFiscalDigital', fromsubclass_=False, pretty_print=True):
+        pass
+    def build(self, node, gds_collector_=None):
+        self.gds_collector_ = gds_collector_
+        if SaveElementTreeNode:
+            self.gds_elementtree_node_ = node
+        already_processed = set()
+        self.ns_prefix_ = node.prefix
+        self._buildAttributes(node, node.attrib, already_processed)
+        for child in node:
+            nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
+            self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
+        return self
+    def _buildAttributes(self, node, attrs, already_processed):
+        value = find_attr_value_('Version', node)
+        if value is not None and 'Version' not in already_processed:
+            already_processed.add('Version')
+            self.Version = value
+        value = find_attr_value_('UUID', node)
+        if value is not None and 'UUID' not in already_processed:
+            already_processed.add('UUID')
+            self.UUID = value
+            self.validate_UUIDType(self.UUID)    # validate type UUIDType
+        value = find_attr_value_('FechaTimbrado', node)
+        if value is not None and 'FechaTimbrado' not in already_processed:
+            already_processed.add('FechaTimbrado')
+            try:
+                self.FechaTimbrado = self.gds_parse_datetime(value)
+            except ValueError as exp:
+                raise ValueError('Bad date-time attribute (FechaTimbrado): %s' % exp)
+            self.validate_t_FechaH(self.FechaTimbrado)    # validate type t_FechaH
+        value = find_attr_value_('RfcProvCertif', node)
+        if value is not None and 'RfcProvCertif' not in already_processed:
+            already_processed.add('RfcProvCertif')
+            self.RfcProvCertif = value
+            self.validate_t_RFC_PM(self.RfcProvCertif)    # validate type t_RFC_PM
+        value = find_attr_value_('Leyenda', node)
+        if value is not None and 'Leyenda' not in already_processed:
+            already_processed.add('Leyenda')
+            self.Leyenda = value
+            self.validate_LeyendaType(self.Leyenda)    # validate type LeyendaType
+        value = find_attr_value_('SelloCFD', node)
+        if value is not None and 'SelloCFD' not in already_processed:
+            already_processed.add('SelloCFD')
+            self.SelloCFD = value
+            self.validate_SelloCFDType(self.SelloCFD)    # validate type SelloCFDType
+        value = find_attr_value_('NoCertificadoSAT', node)
+        if value is not None and 'NoCertificadoSAT' not in already_processed:
+            already_processed.add('NoCertificadoSAT')
+            self.NoCertificadoSAT = value
+            self.validate_NoCertificadoSATType(self.NoCertificadoSAT)    # validate type NoCertificadoSATType
+        value = find_attr_value_('SelloSAT', node)
+        if value is not None and 'SelloSAT' not in already_processed:
+            already_processed.add('SelloSAT')
+            self.SelloSAT = value
+            self.validate_SelloSATType(self.SelloSAT)    # validate type SelloSATType
+    def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
+        pass
+# end class TimbreFiscalDigital
 
 GDSClassesMapping = {
 }
@@ -6752,5 +7086,6 @@ __all__ = [
     "TrasladoType",
     "TrasladoType14",
     "TrasladosType",
-    "TrasladosType13"
+    "TrasladosType13",
+    "TimbreFiscalDigital",
 ]

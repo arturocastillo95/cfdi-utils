@@ -2,7 +2,6 @@ from pathlib import Path
 import ssl
 import base64
 from M2Crypto import X509
-import hashlib
 import lxml.etree as ET
 
 from Cryptodome.PublicKey import RSA
@@ -82,12 +81,16 @@ class SelloDigital():
         digest.update(str(cadena_original).encode('utf-8'))
 
         private_key = self.key
-        print(private_key.exportKey())
         signer = PKCS1_v1_5.new(private_key)
         sig = signer.sign(digest)
         signature = base64.b64encode(sig).decode('utf-8')
 
         xdoc.attrib['Sello'] = signature
+
+        #Add schemaLocation attribute
+        attr_qname = ET.QName('http://www.w3.org/2001/XMLSchema-instance', 'schemaLocation')
+        attr_value = 'http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd'
+        xdoc.attrib[attr_qname] = attr_value
 
         return ET.tostring(xdoc, encoding='utf-8', method='xml', pretty_print=True)
 

@@ -44,10 +44,8 @@ CFDI_COMPROBANTE = {
     'TipoDeComprobante': 'I',
     'MetodoPago': 'PUE',
     'LugarExpedicion': '44970',
-    # 'Sello': 'faltante',
     'Fecha': datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
     'Exportacion': '01',
-    'Descuento': 1.00,
 }
 
 CFDI_EMISOR = {
@@ -57,11 +55,11 @@ CFDI_EMISOR = {
 }
 
 CFDI_RECEPTOR = {
-    'Rfc': 'XAXX010101000',
-    'Nombre': 'Publico en General',
+    'Rfc': 'FUNK671228PH6',
+    'Nombre': 'KARLA FUENTE NOLASCO',
     'UsoCFDI': 'G01',
-    'DomicilioFiscalReceptor' : '78090',
-    'RegimenFiscalReceptor': '601',
+    'DomicilioFiscalReceptor' : '44970',
+    'RegimenFiscalReceptor': '612',
 }
 
 CFDI_CONCEPTOS = [{
@@ -73,15 +71,15 @@ CFDI_CONCEPTOS = [{
     'Descripcion': 'Pago',
     'ValorUnitario': 100.00,
     'Importe': 100.00,
-    'ObjetoImp': '02',
-    'Impuestos': {
-        'Traslados': [{
-            'Base': '100.00',
-            'Impuesto': '002',
-            'TipoFactor': 'Tasa',
-            'TasaOCuota': '0.160000',
-            'Importe': '16.00',
-    }]},
+    'ObjetoImp': '01',
+    # 'Impuestos': {
+    #     'Traslados': [{
+    #         'Base': '100.00',
+    #         'Impuesto': '002',
+    #         'TipoFactor': 'Tasa',
+    #         'TasaOCuota': '0.160000',
+    #         'Importe': '16.00',
+    # }]},
 }]
 
 comprobante_dict['Emisor'] = CFDI40.EmisorType(**CFDI_EMISOR)
@@ -115,14 +113,15 @@ output = StringIO()
 cfdi_obj.export(output, 0)
 
 #Sellamos el comprobante
-signed_xml = sello.sellar_xml_2(output.getvalue())
+signed_xml = sello.sellar_xml(output.getvalue())
+print(signed_xml)
 
 cfdi_timbrado = timbrar_cfdi('pruebasWS', 'pruebasWS', signed_xml)
 print(cfdi_timbrado)
 
 #Exportamos el XML
-# with open('cfdi_sellado.xml', 'wb') as f:
-#     f.write(signed_xml)
+with open('cfdi_timbrado.xml', 'wb') as f:
+    f.write(cfdi_timbrado['xmlTimbrado'].encode('utf-8'))
 
 
 

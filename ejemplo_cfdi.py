@@ -1,5 +1,6 @@
 from cfdi_utils import CFDI40
 from cfdi_utils.SelloDigital import SelloDigital
+from cfdi_utils.Funciones import conceptos_to_object
 import zeep
 
 
@@ -28,10 +29,8 @@ def timbrar_cfdi(usr, password, cfdi_sellado):
         return None
 
 
-
 # Crear un objeto SelloDigital con el certificado y la llave privada
 sello = SelloDigital(PATH_CER, PATH_KEY, CONTRASEÑA)
-comprobante_dict = {}
 
 CFDI_COMPROBANTE = {
     'Version': '4.0',
@@ -46,6 +45,7 @@ CFDI_COMPROBANTE = {
     'LugarExpedicion': '44970',
     'Fecha': datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
     'Exportacion': '01',
+    'Moneda': 'MXN',
 }
 
 CFDI_EMISOR = {
@@ -62,7 +62,8 @@ CFDI_RECEPTOR = {
     'RegimenFiscalReceptor': '612',
 }
 
-CFDI_CONCEPTOS = [{
+CFDI_CONCEPTOS = [
+    {
     'ClaveProdServ': '10101502',
     'NoIdentificacion': '1',
     'Cantidad': 1.000000,
@@ -72,38 +73,45 @@ CFDI_CONCEPTOS = [{
     'ValorUnitario': 100.00,
     'Importe': 100.00,
     'ObjetoImp': '01',
-    # 'Impuestos': {
-    #     'Traslados': [{
-    #         'Base': '100.00',
-    #         'Impuesto': '002',
-    #         'TipoFactor': 'Tasa',
-    #         'TasaOCuota': '0.160000',
-    #         'Importe': '16.00',
-    # }]},
-}]
+    'Impuestos': {
+        'Traslados': [{
+            'Base': 100.00,
+            'Impuesto': '002',
+            'TipoFactor': 'Tasa',
+            'TasaOCuota': 0.160000,
+            'Importe': 16.00,
+    }]},
+    },
+    {
+    'ClaveProdServ': '10101502',
+    'NoIdentificacion': '2',
+    'Cantidad': 1.000000,
+    'ClaveUnidad': 'B17',
+    'Unidad': 'Actividad',
+    'Descripcion': 'Pago',
+    'ValorUnitario': 100.00,
+    'Importe': 100.00,
+    'ObjetoImp': '01',
+    'Impuestos': {
+        'Traslados': [{
+            'Base': 100.00,
+            'Impuesto': '002',
+            'TipoFactor': 'Tasa',
+            'TasaOCuota': 0.160000,
+            'Importe': 16.00,
+    }]},
+    }
+]
+
+comprobante_dict = {}
 
 comprobante_dict['Emisor'] = CFDI40.EmisorType(**CFDI_EMISOR)
 comprobante_dict['Receptor'] = CFDI40.ReceptorType(**CFDI_RECEPTOR)
 
-conceptos_obj = CFDI40.ConceptosType()
+conceptos, impuestos = conceptos_to_object(CFDI_CONCEPTOS)
 
-# Agregar conceptos al comprobante con impuestos
-for concepto in CFDI_CONCEPTOS:
-    
-    concepto_impuesto = concepto.pop('Impuestos') if 'Impuestos' in concepto else None
-
-    if concepto_impuesto:
-        traslados = concepto_impuesto.pop('Traslados')
-        traslado_obj = CFDI40.TrasladosType()
-
-        for traslado in traslados:
-            traslado_obj.Traslado.append(CFDI40.TrasladoType(**traslado))
-
-        concepto['Impuestos'] = CFDI40.ImpuestosType(Traslados=traslado_obj)
-    
-    conceptos_obj.add_Concepto(CFDI40.ConceptoType(**concepto))
-
-comprobante_dict['Conceptos'] = conceptos_obj
+comprobante_dict['Conceptos'] = conceptos
+comprobante_dict['Impuestos'] = impuestos
 
 #Creamos el objeto comprobante
 cfdi_obj = CFDI40.Comprobante(**comprobante_dict, **CFDI_COMPROBANTE)
@@ -112,16 +120,18 @@ cfdi_obj = CFDI40.Comprobante(**comprobante_dict, **CFDI_COMPROBANTE)
 output = StringIO()
 cfdi_obj.export(output, 0)
 
+print(output.getvalue())
+
 #Sellamos el comprobante
 signed_xml = sello.sellar_xml(output.getvalue())
 print(signed_xml)
 
-cfdi_timbrado = timbrar_cfdi('pruebasWS', 'pruebasWS', signed_xml)
-print(cfdi_timbrado)
+# cfdi_timbrado = timbrar_cfdi('pruebasWS', 'pruebasWS', signed_xml)
+# print(cfdi_timbrado)
 
 #Exportamos el XML
-with open('cfdi_timbrado.xml', 'wb') as f:
-    f.write(cfdi_timbrado['xmlTimbrado'].encode('utf-8'))
+# with open('cfdi_timbrado.xml', 'wb') as f:
+#     f.write(cfdi_timbrado['xmlTimbrado'].encode('utf-8'))
 
 
 

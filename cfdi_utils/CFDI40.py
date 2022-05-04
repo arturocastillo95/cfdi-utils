@@ -3629,7 +3629,7 @@ class ImpuestosType(GeneratedsSuper):
         self.Traslados = Traslados
         self.Traslados_nsprefix_ = 'cfdi'
         self.Retenciones = Retenciones
-        self.Retenciones_nsprefix_ = None
+        self.Retenciones_nsprefix_ = 'cfdi'
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5501,9 +5501,9 @@ class ImpuestosType10(GeneratedsSuper):
         self.TotalImpuestosTrasladados = _cast(None, TotalImpuestosTrasladados)
         self.TotalImpuestosTrasladados_nsprefix_ = None
         self.Retenciones = Retenciones
-        self.Retenciones_nsprefix_ = None
+        self.Retenciones_nsprefix_ = 'cfdi'
         self.Traslados = Traslados
-        self.Traslados_nsprefix_ = None
+        self.Traslados_nsprefix_ = 'cfdi'
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5919,7 +5919,7 @@ class TrasladosType13(GeneratedsSuper):
             self.Traslado = []
         else:
             self.Traslado = Traslado
-        self.Traslado_nsprefix_ = None
+        self.Traslado_nsprefix_ = 'cfdi'
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -6040,7 +6040,7 @@ class TrasladoType14(GeneratedsSuper):
         self.parent_object_ = kwargs_.get('parent_object_')
         self.ns_prefix_ = None
         self.Base = _cast(None, Base)
-        self.Base_nsprefix_ = None
+        self.Base_nsprefix_ = 'cfdi'
         self.Impuesto = _cast(None, Impuesto)
         self.Impuesto_nsprefix_ = None
         self.TipoFactor = _cast(None, TipoFactor)

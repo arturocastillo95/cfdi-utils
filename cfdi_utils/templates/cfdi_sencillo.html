@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" media="print" href="cfdi_sencillo.css">
+	<link rel="stylesheet" href="cfdi_sencillo.css">
+	<title>CFDI 4.0</title>
+</head>
+<body>
+	<div class="cfdi-header">
+		<div class="branding">
+			<div class="cfdi-header-info">
+				<div class="cfdi-header-logo">
+					<img src="https://www.kadencewp.com/wp-content/uploads/2020/10/alogo-2.png" alt="">
+				</div>
+				<div class="cfdi-header-info-company">
+					<h1>
+						{{ cfdi.Emisor.Nombre }}
+					</h1>
+					<p>
+						{{ cfdi.Emisor.Rfc }}
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="cfdi-info">
+			<ul>
+				<li>
+					<strong>Folio:</strong> {% if cfdi.Folio  %}{{ cfdi.Folio }}{% else %}N/A{% endif %}
+				</li>
+				<li>
+					<strong>Fecha de Emision:</strong> {{ cfdi.Fecha }}
+				</li>
+				<li>
+					<strong>Lugar Expedición:</strong> {{ cfdi.LugarExpedicion }}
+				</li>
+				<li>
+					<strong>Tipo de Comprobante:</strong> {{ cfdi.TipoDeComprobante }}
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="cfdi-receptor">
+		<div class="receptor">
+			<table class="cfdi-table">
+				<tr>
+					<th>Receptor del comprobante</th>
+				</tr>
+				<tr>
+					<td>
+						{{ cfdi.Receptor.Nombre }}
+					</td>
+				</tr>
+				<tr>
+					<td>
+						{{ cfdi.Receptor.Rfc }}
+					</td>
+				</tr>
+				<tr>
+					<td>
+						{{ cfdi.Receptor.UsoCFDI }}
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="info">
+			<table class="cfdi-table">
+				<tr>
+					<th>Folio Fiscal</th>
+				</tr>
+				<tr>
+					<td>
+						{{ cfdi.Complemento.TimbreFiscalDigital.UUID }}
+					</td>
+				<tr>
+					<th>No. Serie Certificado SAT</th>
+				</tr>
+				<tr>
+					<td>
+						{{ cfdi.Complemento.TimbreFiscalDigital.NoCertificadoSAT }}
+					</td>
+				</tr>
+				<tr>
+					<th>No. Serie del CSD</th>
+				</tr>
+				<tr>
+					<td>
+						{{ cfdi.NoCertificado }}
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div class="cfdi-conceptos">
+		<table class="cfdi-table">
+			<tr>
+				<th>Cant.</th>
+				<th>Clave Unidad</th>
+				<th>Clave Prod Serv</th>
+				<th class="conceptos-desc">Descripción</th>
+				<th>Precio</th>
+				<th>Dto.</th>
+				<th>Importe</th>
+			</tr>
+			{% for concepto in cfdi.Conceptos.Concepto %}
+			<tr>
+				<td>
+					{{ concepto.Cantidad }}
+				</td>
+				<td>
+					{{ concepto.Unidad }}
+				</td>
+				<td>
+					{{ concepto.ClaveProdServ }}
+				</td>
+				<td>
+					{{ concepto.Descripcion }}
+				</td>
+				<td>
+					{{ concepto.ValorUnitario }}
+				</td>
+				<td>
+					{% if concepto.Descuento %}{{ concepto.Descuento }}{% else %}0{% endif %}
+				</td>
+				<td>
+					{{ concepto.Importe }}
+				</td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
+	<div class="cfdi-totales">
+		<div class="info-pago">
+			<table class="cfdi-table">
+				<colgroup>
+					<col width="30%">
+					<col width="70%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th colspan="2">Informacion de Pago</th>
+					</tr>
+					<tr>
+						<td>
+							<strong>Forma de Pago:</strong>
+						</td>
+						<td>
+							{{ cfdi.FormaPago }}
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<strong>Método de Pago:</strong>
+						</td>
+						<td>
+							{{ cfdi.FormaPago }}
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<strong>Importe con letra:</strong>
+						</td>
+						<td>
+							<p class="all-caps">{{ total_en_letras }}</p>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="totales">
+			<table class="cfdi-table">
+				<tr>
+					<th colspan="2">TOTALES</th>
+				</tr>
+				<tr>
+					<td>
+						<strong>Subtotal:</strong>
+					</td>
+					<td>
+						{{ cfdi.SubTotal }}
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<strong>Descuento:</strong>
+					</td>
+					<td>
+						{{ cfdi.Descuento }}
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<strong>Total:</strong>
+					</td>
+					<td>
+						{{ cfdi.Total }}
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div class="cfdi-footer">
+		<div class="qr">
+			<div class="qr-container">{{ qr_svg}}</div>
+		</div>
+		<div class="seguridad-info">
+			<table class="cfdi-table">
+				<tr>
+					<th>Cadena original del Timbre</th>
+				</tr>
+				<tr>
+					<td>
+						{{ cadena_original_timbre }}
+					</td>
+				</tr>
+				<tr>
+					<th>Sello Digital del Emisor</th>
+				</tr>
+				<tr>
+					<td>
+						{{ cfdi.Sello }}
+					</td>
+				</tr>
+				<tr>
+					<th>Sello Digital del SAT</th>
+				</tr>
+				<tr>
+					<td>
+						{{ cfdi.Complemento.TimbreFiscalDigital.SelloSAT }}
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

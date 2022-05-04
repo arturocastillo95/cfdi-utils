@@ -445,7 +445,7 @@ except ModulenotfoundExp_ as exp:
                 dt = datetime_.datetime.strptime(
                     input_data, '%Y-%m-%dT%H:%M:%S')
             dt = dt.replace(tzinfo=tz)
-            return dt
+            return dt.strftime('%Y-%m-%dT%H:%M:%S')
         def gds_validate_date(self, input_data, node=None, input_name=''):
             return input_data
         def gds_format_date(self, input_data, input_name=''):
@@ -6565,11 +6565,11 @@ class TimbreFiscalDigital(GeneratedsSuper):
     def validate_t_FechaH(self, value):
         # Validate type tdCFDI:t_FechaH, a restriction on xs:dateTime.
         if value is not None and Validate_simpletypes_ and self.gds_collector_ is not None:
-            if not isinstance(value, datetime_.datetime):
+            if not isinstance(value, str):
                 lineno = self.gds_get_node_lineno_()
                 self.gds_collector_.add_message('Value "%(value)s"%(lineno)s is not of the correct base simple type (datetime_.datetime)' % {"value": value, "lineno": lineno, })
                 return False
-            value = str(value)
+            value = value
             if not self.gds_validate_simple_patterns(
                     self.validate_t_FechaH_patterns_, value):
                 self.gds_collector_.add_message('Value "%s" does not match xsd pattern restrictions: %s' % (encode_str_2_3(value), self.validate_t_FechaH_patterns_, ))
@@ -6677,7 +6677,8 @@ class TimbreFiscalDigital(GeneratedsSuper):
             outfile.write(' UUID=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.UUID), input_name='UUID')), ))
         if self.FechaTimbrado is not None and 'FechaTimbrado' not in already_processed:
             already_processed.add('FechaTimbrado')
-            outfile.write(' FechaTimbrado="%s"' % self.gds_format_datetime(self.FechaTimbrado, input_name='FechaTimbrado'))
+            # outfile.write(' FechaTimbrado="%s"' % self.gds_format_datetime(self.FechaTimbrado, input_name='FechaTimbrado'))
+            outfile.write(' FechaTimbrado="%s"' % self.FechaTimbrado)
         if self.RfcProvCertif is not None and 'RfcProvCertif' not in already_processed:
             already_processed.add('RfcProvCertif')
             outfile.write(' RfcProvCertif=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.RfcProvCertif), input_name='RfcProvCertif')), ))

@@ -1,0 +1,185 @@
+@page {
+    font-family: Source Sans Pro;
+    margin: .35cm;
+    size: letter;
+}
+
+html {
+    color: #242526;
+    font-family: Source Sans Pro;
+    font-size: 10pt;
+    line-height: 1.6;
+  }
+  body {
+    margin: 0;
+  }
+
+body > div {
+      margin-top: 1.5rem;
+  }
+
+.cfdi-header {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0;
+}
+
+.cfdi-header-info {
+    text-align: center;
+}
+
+.cfdi-header-logo img {
+    width: 120px;
+    height: auto;
+}
+
+.cfdi-header-info-company h1 {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.branding p {
+    font-size: 12pt;
+    margin: 0;
+}
+
+.cfdi-receptor th, .cfdi-table th {
+    text-align: left;
+    font-size: 12pt;
+    font-weight: bold;
+    padding: 0.15rem;
+    /* border-bottom: 1px solid #000; */
+    background-color: #c7c7c7;
+}
+
+.cfdi-receptor {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    /* overflow: hidden; */
+}
+
+.receptor {
+    flex: 1 1 60%;
+    min-width: 30ch;
+}
+
+.info {
+    flex: 1 1 40%;
+}
+
+.receptor table {
+    width: 100%;
+}
+
+.info table {
+    width: 100%;
+    table-layout: fixed;
+    text-align: center;
+}
+
+.info table th {;
+    text-align: center;
+}
+
+.info table td {
+    width: 100%;
+    word-wrap: break-word;
+}
+
+.cfdi-conceptos table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.cfdi-conceptos table th {
+    font-size: 9pt;
+    text-align: center;
+    /* word-wrap: break-word; */
+}
+
+.cfdi-conceptos table td {
+    width: 100%;
+    word-wrap: break-word;
+    vertical-align: top;
+}
+
+.conceptos-desc {
+    width: 55%;
+}
+
+.cfdi-totales {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* margin-top: 1.5rem; */
+}
+
+.info-pago {
+    flex: 1 1 60%;
+    /* background-color: #eaeaea; */
+    height: 100%;
+}
+
+.info-pago table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.totales {
+    flex: 1 1 40%;
+}
+
+.totales table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.cfdi-totales table th {
+    text-align: center;;
+}
+
+.cfdi-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* align-items: center; */
+}
+
+.cdfi-footer svg {
+    width: 100%;
+    height: auto;
+}
+
+.seguridad-info {
+    flex: 1 1 60%;
+    min-width: 0;
+}
+
+.qr {
+
+}
+
+.seguridad-info table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.seguridad-info table td {
+    width: 100%;
+    font-size: 7pt;
+    word-break: break-all;
+}
+
+.all-caps {
+    text-transform: uppercase;
+}
+
+table p {
+    margin: 0;
+}

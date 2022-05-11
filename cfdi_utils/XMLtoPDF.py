@@ -58,9 +58,20 @@ def get_timbre_xml(comprobante):
     return bytes(string, 'utf-8')
 
 def xml_to_pdf(xml_file, xslt_cadena_timbre=CADENA_ORIGINAL_TIMBRE ,html_file=CFDI_HTML, css_file=CFDI_CSS, output_file=None):
-    comprobante = CFDI40.parse(xml_file)
-    timbre_xml = get_timbre_xml(comprobante)
-    cadena_original = get_cadena_original_timbre(timbre_xml, xslt_cadena_timbre).decode('utf-8')
+    try:
+        comprobante = CFDI40.Comprobante.from_xml(xml_file)
+    except Exception as e:
+        raise Exception('Error al leer el archivo xml: %s' % e)
+    try:
+        timbre_xml = get_timbre_xml(comprobante)
+    except Exception as e:
+        print(e)
+        raise Exception('No se encontró el timbre fiscal digital')
+    try:
+        cadena_original = get_cadena_original_timbre(timbre_xml, xslt_cadena_timbre)
+    except Exception as e:
+        print(e)
+        raise Exception('No se encontró la cadena original del timbre fiscal digital')
     qr_svg = create_qr_svg(comprobante)
     total_en_letras = numero_a_moneda(comprobante.Total) + ' M.N'
     #Create the template

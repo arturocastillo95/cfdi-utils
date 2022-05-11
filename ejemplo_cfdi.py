@@ -37,8 +37,8 @@ CFDI_COMPROBANTE = {
     'FormaPago': '01',
     'NoCertificado': sello.numero_cer,
     'Certificado': sello.cert_base64,
-    'SubTotal': 100.00,
-    'Total': 100.00,
+    'SubTotal': 300.00,
+    'Total': 334.00,
     'Moneda': 'MXN',
     'TipoDeComprobante': 'I',
     'MetodoPago': 'PUE',
@@ -72,7 +72,7 @@ CFDI_CONCEPTOS = [
     'Descripcion': 'Pago',
     'ValorUnitario': 100.00,
     'Importe': 100.00,
-    'ObjetoImp': '01',
+    'ObjetoImp': '02',
     'Impuestos': {
         'Traslados': [{
             'Base': 100.00,
@@ -88,17 +88,17 @@ CFDI_CONCEPTOS = [
     'Cantidad': 1.000000,
     'ClaveUnidad': 'B17',
     'Unidad': 'Actividad',
-    'Descripcion': 'Pago',
-    'ValorUnitario': 100.00,
-    'Importe': 100.00,
-    'ObjetoImp': '01',
+    'Descripcion': 'Pago 2',
+    'ValorUnitario': 200.00,
+    'Importe': 200.00,
+    'ObjetoImp': '02',
     'Impuestos': {
         'Traslados': [{
-            'Base': 100.00,
-            'Impuesto': '002',
+            'Base': 200.00,
+            'Impuesto': '003',
             'TipoFactor': 'Tasa',
-            'TasaOCuota': 0.160000,
-            'Importe': 16.00,
+            'TasaOCuota': 0.090000,
+            'Importe': 18.00,
     }]},
     }
 ]
@@ -126,8 +126,8 @@ print(output.getvalue())
 signed_xml = sello.sellar_xml(output.getvalue())
 print(signed_xml)
 
-# cfdi_timbrado = timbrar_cfdi('pruebasWS', 'pruebasWS', signed_xml)
-# print(cfdi_timbrado)
+cfdi_timbrado = timbrar_cfdi('pruebasWS', 'pruebasWS', signed_xml)
+print(cfdi_timbrado)
 
 #Exportamos el XML
 # with open('cfdi_timbrado.xml', 'wb') as f:

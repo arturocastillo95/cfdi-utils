@@ -1,7 +1,9 @@
 #Import CFDI40 from the same directory as this file
 import sys
+from io import StringIO
 sys.path.append('.')
 from cfdi_utils import CFDI40
+from cfdi_utils.SelloDigital import SelloDigital
 
 def conceptos_to_object(conceptos):
     """
@@ -51,4 +53,44 @@ def conceptos_to_object(conceptos):
     result[0] = conceptos_obj
     return result
 
+def dic_to_comprobante_obj(dic):
+    """
+    Convierte un diccionario a un objeto XML.
+    """
+
+    if not dic['Conceptos']:
+        raise Exception('No hay conceptos en la factura')
+    if not dic['Emisor']:
+        raise Exception('No hay emisor en la factura')
+    if not dic['Receptor']:
+        raise Exception('No hay receptor en la factura')
     
+    
+    #Creamos un objeto de emisor
+    dic['Emisor'] = CFDI40.EmisorType(**dic['Emisor'])
+    #Creamos un objeto de receptor
+    dic['Receptor'] = CFDI40.ReceptorType(**dic['Receptor'])
+
+    #Procesamos los Conceptos e Impuestos para obtener un objeto de conceptos y un objeto de impuestos si existen
+    dic['Conceptos'], dic['Impuestos'] = conceptos_to_object(dic['Conceptos'])
+
+    #Creamos un objeto de comprobante
+    comprobante = CFDI40.Comprobante(**dic)
+
+    return comprobante
+
+def generar_xml_sellado(dic, certificado, llave_privada, password):
+    """
+    Genera un XML a partir de un diccionario.
+    """
+    comprobante = dic_to_comprobante_obj(dic)
+
+    #Creamos el XML sin sello
+    xml = StringIO()
+    comprobante.export(xml, 0)
+
+    sello = SelloDigital(certificado, llave_privada, password)
+    xml_sellado = sello.sellar_xml(xml)
+    
+    return xml_sellado
+

@@ -93,4 +93,3 @@ def generar_xml_sellado(dic, certificado, llave_privada, password):
     xml_sellado = sello.sellar_xml(xml)
     
     return xml_sellado
-

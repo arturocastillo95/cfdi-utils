@@ -1,7 +1,7 @@
 from pathlib import Path
 from Numero_a_Letras import numero_a_moneda
 import base64
-import CFDI40
+
 from io import BytesIO, StringIO
 import lxml.etree as ET
 
@@ -9,6 +9,11 @@ from jinja2 import Template
 from weasyprint import HTML, CSS
 import qrcode
 import qrcode.image.svg
+
+#Import CFDI40 from the same directory
+import sys
+sys.path.append('.')
+import CFDI40
 
 EXAMPLE_XML             = Path('cfdi4_generico.xml')
 RUNNING_PATH            = Path(__file__).parent

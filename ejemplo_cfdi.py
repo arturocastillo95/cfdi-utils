@@ -1,6 +1,5 @@
-from cfdi_utils import CFDI40
 from cfdi_utils.SelloDigital import SelloDigital
-from cfdi_utils.Funciones import conceptos_to_object
+from cfdi_utils.Funciones import generar_xml_sellado
 import zeep
 
 
@@ -103,31 +102,40 @@ CFDI_CONCEPTOS = [
     }
 ]
 
-comprobante_dict = {}
+dic = CFDI_COMPROBANTE
+dic['Emisor'] = CFDI_EMISOR
+dic['Receptor'] = CFDI_RECEPTOR
+dic['Conceptos'] = CFDI_CONCEPTOS
 
-comprobante_dict['Emisor'] = CFDI40.EmisorType(**CFDI_EMISOR)
-comprobante_dict['Receptor'] = CFDI40.ReceptorType(**CFDI_RECEPTOR)
+xml = generar_xml_sellado(dic)
 
-conceptos, impuestos = conceptos_to_object(CFDI_CONCEPTOS)
+print(xml)
 
-comprobante_dict['Conceptos'] = conceptos
-comprobante_dict['Impuestos'] = impuestos
+# comprobante_dict = {}
 
-#Creamos el objeto comprobante
-cfdi_obj = CFDI40.Comprobante(**comprobante_dict, **CFDI_COMPROBANTE)
+# comprobante_dict['Emisor'] = CFDI40.EmisorType(**CFDI_EMISOR)
+# comprobante_dict['Receptor'] = CFDI40.ReceptorType(**CFDI_RECEPTOR)
 
-#Exportamos el comprobante sin sellar a XML
-output = StringIO()
-cfdi_obj.export(output, 0)
+# conceptos, impuestos = conceptos_to_object(CFDI_CONCEPTOS)
 
-print(output.getvalue())
+# comprobante_dict['Conceptos'] = conceptos
+# comprobante_dict['Impuestos'] = impuestos
 
-#Sellamos el comprobante
-signed_xml = sello.sellar_xml(output.getvalue())
-print(signed_xml)
+# #Creamos el objeto comprobante
+# cfdi_obj = CFDI40.Comprobante(**comprobante_dict, **CFDI_COMPROBANTE)
 
-cfdi_timbrado = timbrar_cfdi('pruebasWS', 'pruebasWS', signed_xml)
-print(cfdi_timbrado)
+# #Exportamos el comprobante sin sellar a XML
+# output = StringIO()
+# cfdi_obj.export(output, 0)
+
+# print(output.getvalue())
+
+# #Sellamos el comprobante
+# signed_xml = sello.sellar_xml(output.getvalue())
+# print(signed_xml)
+
+# cfdi_timbrado = timbrar_cfdi('pruebasWS', 'pruebasWS', signed_xml)
+# print(cfdi_timbrado)
 
 #Exportamos el XML
 # with open('cfdi_timbrado.xml', 'wb') as f:

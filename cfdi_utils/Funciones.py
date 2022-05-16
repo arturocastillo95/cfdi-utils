@@ -5,16 +5,26 @@ sys.path.append('.')
 from cfdi_utils import CFDI40
 from cfdi_utils.SelloDigital import SelloDigital
 
-def conceptos_to_object(conceptos):
+def procesar_conceptos(conceptos):
     """
     Convierte un diccionario de conceptos a un objeto ConcpetosType. Retorna el objeto ConceptosType y el objeto ImpuestosType10 (si existe).
+
+    Tambien calcula y retorna el subtotal y el total de la factura.
+
+    Retorna un diccionario con los conceptos, los impuestos (si existen), el subtotal y total de la factura.
     """
     conceptos_obj = CFDI40.ConceptosType()
+    subtotal = 0
 
     #Creamos un objeto de impuestos para la clase padre Comprobante que tiene un hijo de tipo ImpuestosType10 el cual es un resumen de los impuestos
     resumen_impuestos = CFDI40.ImpuestosType10()
     resumen_traslados_obj = resumen_retenciones_obj = None
-    result = [None] * 2
+    result = {
+        'Conceptos': None, 
+        'Impuestos': None,
+        'SubTotal': None,
+        'Total': None
+        }
 
     for concepto in conceptos:
         impuestos = concepto.pop('Impuestos') if 'Impuestos' in concepto else None
@@ -44,13 +54,21 @@ def conceptos_to_object(conceptos):
                 concepto['Impuestos'].Retenciones = retenciones_obj
 
         conceptos_obj.Concepto.append(CFDI40.ConceptoType(**concepto))
+        subtotal += concepto['Importe']
     
     if resumen_traslados_obj or resumen_retenciones_obj:
         resumen_impuestos.Traslados = resumen_traslados_obj
         resumen_impuestos.Retenciones = resumen_retenciones_obj
-        result[1] = resumen_impuestos
+        result['Impuestos'] = resumen_impuestos
 
-    result[0] = conceptos_obj
+        impuestos_trasladado = resumen_impuestos.TotalImpuestosTrasladados if resumen_impuestos.TotalImpuestosTrasladados else 0
+        impuestos_retenido = resumen_impuestos.TotalImpuestosRetenidos if resumen_impuestos.TotalImpuestosRetenidos else 0
+        result['Total'] = subtotal + impuestos_trasladado - impuestos_retenido
+    else:
+        result['Total'] = subtotal
+
+    result['Conceptos'] = conceptos_obj
+    result['SubTotal'] = subtotal
     return result
 
 def dic_to_comprobante_obj(dic):
@@ -72,14 +90,15 @@ def dic_to_comprobante_obj(dic):
     dic['Receptor'] = CFDI40.ReceptorType(**dic['Receptor'])
 
     #Procesamos los Conceptos e Impuestos para obtener un objeto de conceptos y un objeto de impuestos si existen
-    dic['Conceptos'], dic['Impuestos'] = conceptos_to_object(dic['Conceptos'])
+    conceptos_procesados = procesar_conceptos(dic['Conceptos'])
+    dic['Conceptos'], dic['Impuestos'], dic['SubTotal'], dic['Total'] = conceptos_procesados['Conceptos'], conceptos_procesados['Impuestos'], conceptos_procesados['SubTotal'], conceptos_procesados['Total']
 
     #Creamos un objeto de comprobante
     comprobante = CFDI40.Comprobante(**dic)
 
     return comprobante
 
-def generar_xml_sellado(dic, certificado, llave_privada, password):
+def generar_xml_sellado(dic, certificado=None, llave_privada=None, password=None):
     """
     Genera un XML a partir de un diccionario.
     """
@@ -89,7 +108,9 @@ def generar_xml_sellado(dic, certificado, llave_privada, password):
     xml = StringIO()
     comprobante.export(xml, 0)
 
-    sello = SelloDigital(certificado, llave_privada, password)
-    xml_sellado = sello.sellar_xml(xml)
+    return xml.getvalue()
+
+    # sello = SelloDigital(certificado, llave_privada, password)
+    # xml_sellado = sello.sellar_xml(xml)
     
-    return xml_sellado
+    # return xml_sellado
